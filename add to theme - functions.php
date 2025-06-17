@@ -1,3 +1,4 @@
+<?php
 // Hook into AccessAlly's early contact creation process
 add_action('accessally_update_user', 'create_wordpress_user_on_early_contact', 10, 2);
 
