@@ -76,40 +76,17 @@ function add_early_contact_user_creation_script() {
     }
     ?>
     <script type="text/javascript">
-    console.log('AccessAlly Debug: Enhanced script loaded');
-    
     jQuery(document).ready(function($) {
-        console.log('AccessAlly Debug: jQuery ready');
-        
-        // Target the specific "NEXT" button from step 1 based on the actual form HTML
-        var nextButton = $('#accessally-order-form-flex-submit-button-1-8');
-        console.log('AccessAlly Debug: Found NEXT button: ' + nextButton.length);
-        
-        // Also check for the form fields
-        var firstNameField = $('#accessally-order-form-first-name-1');
-        var lastNameField = $('#accessally-order-form-last-name-1');
-        var emailField = $('#accessally-order-form-email-1');
-        
-        console.log('AccessAlly Debug: Form fields - First Name: ' + firstNameField.length + ', Last Name: ' + lastNameField.length + ', Email: ' + emailField.length);
-        
-        // Hook into the specific NEXT button click
+        // Hook into the specific NEXT button click for step 1 of the order form
         $(document).on('click', '#accessally-order-form-flex-submit-button-1-8', function(e) {
-            console.log('AccessAlly Debug: NEXT button clicked!');
-            
             // Get form data
             var firstName = $('#accessally-order-form-first-name-1').val();
             var lastName = $('#accessally-order-form-last-name-1').val();
             var email = $('#accessally-order-form-email-1').val();
             
-            console.log('AccessAlly Debug: Form data - First Name: "' + firstName + '", Last Name: "' + lastName + '", Email: "' + email + '"');
-            
             if (firstName && lastName && email) {
-                console.log('AccessAlly Debug: All required fields filled, proceeding with user creation...');
-                
-                // Wait a bit for AccessAlly to process the contact creation
+                // Wait for AccessAlly to process the contact creation
                 setTimeout(function() {
-                    console.log('AccessAlly Debug: Making AJAX call to create WordPress user...');
-                    
                     $.ajax({
                         url: '<?php echo admin_url('admin-ajax.php'); ?>',
                         type: 'POST',
@@ -121,54 +98,15 @@ function add_early_contact_user_creation_script() {
                             last_name: lastName
                         },
                         success: function(response) {
-                            console.log('AccessAlly Debug: AJAX response received');
-                            console.log('AccessAlly Debug: Response:', response);
-                            if (response.success) {
-                                console.log('AccessAlly Success: ' + response.data);
-                            } else {
-                                console.log('AccessAlly Error: ' + response.data);
-                            }
+                            // User creation completed - no action needed
                         },
                         error: function(xhr, status, error) {
-                            console.log('AccessAlly Debug: AJAX error - Status: ' + status + ', Error: ' + error);
-                            console.log('AccessAlly Debug: Response text: ' + xhr.responseText);
+                            // Silent error handling - could log to server if needed
                         }
                     });
                 }, 2000); // Wait 2 seconds for AccessAlly to process
-            } else {
-                console.log('AccessAlly Debug: Missing form data - cannot proceed');
             }
         });
-        
-        // Also add a general click handler for any AccessAlly flex submit buttons for debugging
-        $(document).on('click', '[accessally-order-form-flex-submit]', function() {
-            var buttonId = $(this).attr('id');
-            var buttonText = $(this).text().trim();
-            console.log('AccessAlly Debug: AccessAlly flex submit button clicked - ID: "' + buttonId + '", Text: "' + buttonText + '"');
-        });
-        
-        // Debug: Log form structure after page loads
-        setTimeout(function() {
-            console.log('AccessAlly Debug: === FORM ANALYSIS ===');
-            
-            var orderForm = $('#accessally-order-form-1');
-            console.log('AccessAlly Debug: Main order form found: ' + orderForm.length);
-            
-            if (orderForm.length > 0) {
-                var allInputs = orderForm.find('input[type="text"], input[type="email"]');
-                console.log('AccessAlly Debug: Found ' + allInputs.length + ' input fields in order form');
-                
-                var allButtons = orderForm.find('[accessally-order-form-flex-submit]');
-                console.log('AccessAlly Debug: Found ' + allButtons.length + ' flex submit buttons in order form');
-                
-                allButtons.each(function(i) {
-                    var btn = $(this);
-                    console.log('AccessAlly Debug: Button ' + i + ' - ID: "' + btn.attr('id') + '", Text: "' + btn.text().trim() + '"');
-                });
-            }
-            
-            console.log('AccessAlly Debug: === END FORM ANALYSIS ===');
-        }, 1000);
     });
     </script>
     <?php
