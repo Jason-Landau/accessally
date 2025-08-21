@@ -77,15 +77,16 @@ function add_early_contact_user_creation_script() {
     ?>
     <script type="text/javascript">
     jQuery(document).ready(function($) {
-        // Hook into the specific NEXT button click for step 1 of the order form
-        $(document).on('click', '#accessally-order-form-flex-submit-button-1-8', function(e) {
-            // Get form data
+        // ---- CHANGED: bind directly to the element; add mousedown fallback + one-time guard ----
+        var fired = false;
+        function aaEarlyCreate() {
+            if (fired) return;
             var firstName = $('#accessally-order-form-first-name-1').val();
-            var lastName = $('#accessally-order-form-last-name-1').val();
-            var email = $('#accessally-order-form-email-1').val();
-            
+            var lastName  = $('#accessally-order-form-last-name-1').val();
+            var email     = $('#accessally-order-form-email-1').val();
+
             if (firstName && lastName && email) {
-                // Wait for AccessAlly to process the contact creation
+                fired = true;
                 setTimeout(function() {
                     $.ajax({
                         url: '<?php echo admin_url('admin-ajax.php'); ?>',
@@ -106,7 +107,11 @@ function add_early_contact_user_creation_script() {
                     });
                 }, 2000); // Wait 2 seconds for AccessAlly to process
             }
-        });
+        }
+
+        // Direct bindings (avoid delegated handler blocked by stopPropagation)
+        $('#accessally-order-form-flex-submit-button-1-8').on('click', aaEarlyCreate);
+        $('#accessally-order-form-flex-submit-button-1-8').on('mousedown', aaEarlyCreate); // fallback if click is canceled
     });
     </script>
     <?php
@@ -151,4 +156,4 @@ function ensure_wp_user_exists_on_update($wp_user_id, $contact_id) {
     } catch (Exception $e) {
         error_log('AccessAlly: Error in ensure_wp_user_exists_on_update - ' . $e->getMessage());
     }
-} 
+}
